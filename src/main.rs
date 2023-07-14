@@ -14,17 +14,18 @@ fn main() {
     let source = read_to_char_vec();
     let mut lexer = Lexer::new(source);
     let tokens = lexer.lex();
-    println!("{:#?}", tokens)
-    // let mut parser = Parser::new(tokens);
-    // let ast = parser.parse();
-    // cfg_if::cfg_if! {
-    //     if #[cfg(feature = "builtin")] {
-    //         use voltage_codegen::builtin::Engine;
+    // println!("{:#?}", tokens);
+    let mut parser = Parser::new(tokens);
+    let ast = parser.parse();
+    println!("{:#?}", ast);
+    cfg_if::cfg_if! {
+        if #[cfg(feature = "builtin")] {
+            use voltage_codegen::builtin::Engine;
 
-    //         let mut engine = Engine::new();
-    //         let contents = engine.exectute(ast);
-    //         #[cfg(feature = "json_abi")]
-    //         fs::write("./a.out", contents).unwrap()
-    //     }
-    // }
+            let mut engine = Engine::new();
+            let contents = engine.exectute(ast);
+            #[cfg(feature = "json_abi")]
+            fs::write("./a.out", contents).unwrap()
+        }
+    }
 }

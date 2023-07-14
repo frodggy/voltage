@@ -1,55 +1,65 @@
 {
   "env": {
     "global_variables": {
-      "sub": {
-        "Function": {
-          "name": "sub",
-          "params": [
-            {
-              "name": "x",
-              "type": "Int"
-            },
-            {
-              "name": "y",
-              "type": "Int"
-            }
-          ],
-          "body": [],
-          "env": {
-            "global_variables": {}
-          },
-          "return_type": "Void"
-        }
-      },
-      "constx": {
+      "x": {
         "Int": {
-          "value": 10
+          "value": 21
         }
       },
-      "add": {
-        "Function": {
-          "name": "add",
-          "params": [
-            {
-              "name": "x",
-              "type": "Int"
-            },
-            {
-              "name": "y",
-              "type": "Int"
-            }
-          ],
-          "body": [],
-          "env": {
-            "global_variables": {}
-          },
-          "return_type": "Void"
-        }
-      },
-      "consty": {
+      "y": {
         "Int": {
-          "value": 10
+          "value": 41
         }
+      },
+      "z": {
+        "Int": {
+          "value": 62
+        }
+      }
+    },
+    "return": null
+  },
+  "globals": {
+    "add": {
+      "Function": {
+        "name": "add",
+        "type": "Function",
+        "params": [
+          {
+            "name": "x",
+            "type": "Int"
+          },
+          {
+            "name": "y",
+            "type": "Int"
+          }
+        ],
+        "body": [
+          {
+            "Return": {
+              "value": {
+                "BinaryExpr": {
+                  "op": "Plus",
+                  "lhs": {
+                    "Identifier": {
+                      "val": "x"
+                    }
+                  },
+                  "rhs": {
+                    "Identifier": {
+                      "val": "y"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "env": {
+          "global_variables": {},
+          "return": null
+        },
+        "return_type": "Void"
       }
     }
   }

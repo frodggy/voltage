@@ -1,13 +1,13 @@
 pub mod expressions;
 pub mod statements;
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, PartialOrd)]
 pub struct FuncParam {
     pub name: String,
     pub r#type: Type,
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, PartialOrd)]
 pub enum Operator {
     Plus,
     Minus,
@@ -15,7 +15,7 @@ pub enum Operator {
     Division,
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, PartialOrd)]
 pub enum CmpOperators {
     Equal,
     NotEqual,
@@ -25,7 +25,7 @@ pub enum CmpOperators {
     LessThenOrEqual,
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, PartialOrd)]
 pub enum Type {
     Char,
     Int8,

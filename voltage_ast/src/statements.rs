@@ -1,6 +1,6 @@
 use crate::{expressions::Expression, Type, FuncParam, CmpOperators};
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, PartialOrd)]
 pub enum Statement {
     VariableDeclaration {
         name: String,
@@ -16,6 +16,11 @@ pub enum Statement {
     IfStatement {
         expr1: Expression,
         cmp_op: CmpOperators,
-        expr2: Expression
-    }
+        expr2: Expression,
+        body: Vec<Statement>
+    },
+    Return {
+        value: Expression
+    },
+    ExprStatement { expr: Expression }
 }

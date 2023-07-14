@@ -1,6 +1,6 @@
 use crate::Operator;
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, PartialOrd)]
 pub enum Expression {
     StringLiteral { val: String },
     Identifier { val: String },
@@ -9,7 +9,7 @@ pub enum Expression {
     FloatLiteral { val: f64 },
     CharLiteral { val: char },
     
-    FunctionCall { name: String, params: Vec<Expression> },
+    FunctionCall { name: Box<Expression>, params: Vec<Expression> },
     BinaryExpr {
         op: Operator,
         lhs: Box<Expression>,

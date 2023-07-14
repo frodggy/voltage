@@ -57,7 +57,7 @@ impl Parser {
 
                 self.next_token();
 
-                let value = self.parse_expression(0);
+                let value = self.parse_expression(0).unwrap();
 
                 return Some(Statement::VariableDeclaration {
                     name: identifier,
@@ -129,43 +129,61 @@ impl Parser {
 
                 self.next_token();
 
-                let mut raw_type = String::new();
-
-                if !matches!(self.peak_next_token(), Some(Token::Colon { .. })) {
-                    raw_type = String::from("void")
-                }
-
-                self.next_token();
-
-                raw_type = match self.next_token() {
-                    Some(id) => match id {
-                        Token::Identifier { val } => String::from_iter(val),
-                        _ => panic!("Expected identifier"),
-                    },
-                    None => panic!(),
+                let raw_type = if !matches!(self.peak_next_token(), Some(Token::Colon { .. })) {
+                    String::from("void")
+                } else {
+                    self.next_token();
+                    match self.next_token() {
+                        Some(id) => match id {
+                            Token::Identifier { val } => String::from_iter(val),
+                            _ => panic!("Expected identifier"),
+                        },
+                        None => panic!(),
+                    }
                 };
 
                 let block = self.parse_block(Token::End);
+
+                let r#type = raw_type.as_str();
 
                 return Some(Statement::FunctionDeclaration {
                     name: identifier,
                     params,
                     body: block,
-                    return_type: Type::from(raw_type.as_str()),
+                    return_type: Type::from(r#type),
                 });
             }
             Some(Token::If) => {
-                let expr1 = self.parse_expression(0);
+                let expr1 = self.parse_expression(0).unwrap();
                 let cmp_op = self.parse_cmp_op();
-                let expr2 = self.parse_expression(0);
+                let expr2 = self.parse_expression(0).unwrap();
+
+                if !matches!(self.peak_next_token(), Some(Token::LBrace { .. })) {
+                    panic!("");
+                }
+
+                self.next_token();
+
+                let body = self.parse_block(Token::RBrace { val: '}' });
 
                 return Some(Statement::IfStatement {
                     expr1,
                     cmp_op,
                     expr2,
-                })
+                    body,
+                });
             }
-            x => return None,
+            Some(Token::Return) => {
+                let ret = self.parse_expression(0).unwrap();
+                return Some(Statement::Return { value: ret });
+            }
+            _ => {
+                let expr = match self.parse_expression(0) {
+                    Some(expr) => expr,
+                    None => return None,
+                };
+                return Some(Statement::ExprStatement { expr });
+            }
         };
     }
 
@@ -184,8 +202,9 @@ impl Parser {
     pub fn parse_block(&mut self, delimiter: Token) -> Vec<Statement> {
         let mut block = vec![];
 
-        while let Some(token) = self.next_token() {
-            if matches!(token, delimiter) {
+        loop {
+            if self.peak_next_token() == Some(delimiter.clone()) {
+                self.next_token();
                 break;
             }
 
@@ -219,7 +238,42 @@ impl Parser {
         Some(token.clone())
     }
 
-    pub fn parse_expression(&mut self, bp: u8) -> Expression {
+    pub fn forward(&mut self, times: usize) -> Option<Token> {
+        let mut tokens = self.tokens.iter();
+
+        let mut cur_time = 0;
+
+        loop {
+            if cur_time >= times - 1 {
+                break;
+            }
+
+            tokens.next();
+
+            cur_time += 1;
+        }
+
+        let token = match tokens.next().clone() {
+            Some(token) => token,
+            None => return None,
+        };
+
+        let mut cur_time = 0;
+
+        loop {
+            if cur_time >= times {
+                break;
+            }
+
+            tokens.next_back();
+
+            cur_time += 1;
+        }
+
+        Some(token.clone())
+    }
+
+    pub fn parse_expression(&mut self, bp: u8) -> Option<Expression> {
         let mut lhs = match self.next_token() {
             Some(Token::String { val }) => {
                 let val: String = val.into_iter().collect();
@@ -244,11 +298,36 @@ impl Parser {
             Some(Token::Char { val }) => Expression::CharLiteral { val },
             Some(Token::True) => Expression::BooleanLiteral { val: true },
             Some(Token::False) => Expression::BooleanLiteral { val: false },
-            _ => unimplemented!(),
+            x => return None,
         };
 
         loop {
             let infix = if let Some(infix) = self.peak_next_token() {
+                if matches!(self.forward(1), Some(Token::LParen { .. })) {
+                    self.next_token();
+
+                    let mut params: Vec<Expression> = vec![];
+
+                    loop {
+                        if self.peak_next_token() == Some(Token::RParen { val: ')' }) {
+                            self.next_token();
+                            break;
+                        }
+
+                        if self.peak_next_token() == Some(Token::Comma { val: ',' }) {
+                            self.next_token();
+                            params.push(self.parse_expression(0).unwrap());
+                        } else {
+                            params.push(self.parse_expression(0).unwrap());
+                        }
+                    }
+
+                    lhs = Expression::FunctionCall {
+                        name: Box::new(lhs),
+                        params,
+                    }
+                }
+
                 infix
             } else {
                 break;
@@ -263,7 +342,7 @@ impl Parser {
 
                 let rhs = self.parse_expression(rbp);
 
-                lhs = make_infix_expr(lhs.clone(), next_op, rhs);
+                lhs = make_infix_expr(lhs.clone(), next_op, rhs.unwrap());
 
                 continue;
             }
@@ -271,7 +350,7 @@ impl Parser {
             break;
         }
 
-        lhs
+        Some(lhs)
     }
 }
 
