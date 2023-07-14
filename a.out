@@ -1,0 +1,56 @@
+{
+  "env": {
+    "global_variables": {
+      "sub": {
+        "Function": {
+          "name": "sub",
+          "params": [
+            {
+              "name": "x",
+              "type": "Int"
+            },
+            {
+              "name": "y",
+              "type": "Int"
+            }
+          ],
+          "body": [],
+          "env": {
+            "global_variables": {}
+          },
+          "return_type": "Void"
+        }
+      },
+      "constx": {
+        "Int": {
+          "value": 10
+        }
+      },
+      "add": {
+        "Function": {
+          "name": "add",
+          "params": [
+            {
+              "name": "x",
+              "type": "Int"
+            },
+            {
+              "name": "y",
+              "type": "Int"
+            }
+          ],
+          "body": [],
+          "env": {
+            "global_variables": {}
+          },
+          "return_type": "Void"
+        }
+      },
+      "consty": {
+        "Int": {
+          "value": 10
+        }
+      }
+    }
+  }
+}

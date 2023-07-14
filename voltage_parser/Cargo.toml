@@ -1,0 +1,11 @@
+[package]
+name = "voltage_parser"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0.171", features = ["derive"] }
+voltage_ast = { version = "0.1.0", path = "../voltage_ast" }
+voltage_lexer = { version = "0.1.0", path = "../voltage_lexer" }

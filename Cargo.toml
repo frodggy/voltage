@@ -1,0 +1,25 @@
+[package]
+name = "voltage"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["builtin", "json_abi"]
+builtin = []
+json_abi = []
+
+[dependencies]
+voltage_lexer = { version = "0.1.0", path = "./voltage_lexer" }
+voltage_parser = { version = "0.1.0", path = "./voltage_parser" }
+voltage_ast = { version = "0.1.0", path = "./voltage_ast" }
+voltage_codegen = { version = "0.1.0", path = "voltage_codegen", features = ["json_abi"] }
+cfg-if = "1.0.0"
+
+[workspace]
+members = [
+    "voltage_ast",
+    "voltage_codegen",
+    "voltage_lexer",
+    "voltage_parser",
+    "voltage_typecheck"
+]
